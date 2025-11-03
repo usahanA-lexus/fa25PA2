@@ -114,14 +114,16 @@ int buildEncodingTree(int nextFree)
 
     while (heap.size > 1) // While more than one node in heap
     {
-        // Pop two smallest nodes
-        int leftIdx = heap.pop(weightArr);  //left child
-        int rightIdx = heap.pop(weightArr);  //right child
+        
+        int first = heap.pop(weightArr);  // first smallest index
+        int second = heap.pop(weightArr); // second smallest index
+        int leftIndex = (weightArr[first] <= weightArr[second]) ? first : second;  //left child
+        int rightIndex = (weightArr[first] > weightArr[second]) ? first : second;  //right child
 
-        charArr[nextFree] = '\0';                                       // set char to null char, Internal node to detect later
-        weightArr[nextFree] = weightArr[leftIdx] + weightArr[rightIdx]; // set weight of new internal node to be sum of 2 child weights
-        leftArr[nextFree] = leftIdx;
-        rightArr[nextFree] = rightIdx;
+        charArr[nextFree] = '\0';                                           // set char to null char, Internal node to detect later
+        weightArr[nextFree] = weightArr[leftIndex] + weightArr[rightIndex]; // set weight of new internal node to be sum of 2 child weights
+        leftArr[nextFree] = leftIndex;
+        rightArr[nextFree] = rightIndex;
 
         heap.push(nextFree, weightArr);                                 //put new parent node's index back into heap
         nextFree++;                                                     // move to next free index
@@ -155,10 +157,9 @@ void generateCodes(int root, string codes[])
         s.pop();
         int nodeIndex = p.first;    //extract node index 
         string code = p.second;     // extract code string
-
-        // Check if leaf node
+       
         if (leftArr[nodeIndex] == -1 && rightArr[nodeIndex] == -1) 
-        {
+        { // Check if leaf node
             codes[charArr[nodeIndex] - 'a'] = code; // Store code for character
         } else 
         { // internal node

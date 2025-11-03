@@ -88,7 +88,8 @@ int createLeafNodes(int freq[]) {
 }
 
 // Step 3: Build the encoding tree using heap operations
-int buildEncodingTree(int nextFree) { 
+int buildEncodingTree(int nextFree) 
+{ 
     // TODO:
     // 1. Create a MinHeap object.
     // 2. Push all leaf node indices into the heap.
@@ -107,7 +108,9 @@ int buildEncodingTree(int nextFree) {
     */
     MinHeap heap; // Create MinHeap object
     for (int i = 0; i < nextFree; ++i) 
-    {heap.push(i, weightArr); // Push all leaf node indices into the heap}
+    {
+        heap.push(i, weightArr); // Push all leaf node indices into the heap
+    }
 
     while (heap.size > 1) // While more than one node in heap
     {
@@ -115,7 +118,7 @@ int buildEncodingTree(int nextFree) {
         int leftIdx = heap.pop(weightArr);  //left child
         int rightIdx = heap.pop(weightArr);  //right child
 
-        charArr[nextFree] = '\0';                                       // set char to null char, Internal node
+        charArr[nextFree] = '\0';                                       // set char to null char, Internal node to detect later
         weightArr[nextFree] = weightArr[leftIdx] + weightArr[rightIdx]; // set weight of new internal node to be sum of 2 child weights
         leftArr[nextFree] = leftIdx;
         rightArr[nextFree] = rightIdx;
@@ -127,11 +130,44 @@ int buildEncodingTree(int nextFree) {
 }
 
 // Step 4: Use an STL stack to generate codes
-void generateCodes(int root, string codes[]) {
+void generateCodes(int root, string codes[]) 
+{
     // TODO:
     // Use stack<pair<int, string>> to simulate DFS traversal.
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
+
+    // Check to bypass special cases
+    if (root == -1) return; // If tree is empty, return
+    if (leftArr[root] == -1 && rightArr[root] == -1) 
+    {// Single node tree (only root)
+        codes[charArr[root] - 'a'] = ""; // Assign empty code
+        return;
+    }
+
+    // Create stack
+    stack<pair<int, string>> s;
+    s.push({root, ""});             // Start with root and empty code
+
+    while (!s.empty())              // While stack isn't empty
+    {
+        auto p = s.top();           // copy the pair<int,string>
+        s.pop();
+        int nodeIndex = p.first;    //extract node index 
+        string code = p.second;     // extract code string
+
+        // Check if leaf node
+        if (leftArr[nodeIndex] == -1 && rightArr[nodeIndex] == -1) 
+        {
+            codes[charArr[nodeIndex] - 'a'] = code; // Store code for character
+        } else 
+        { // internal node
+            if (rightArr[nodeIndex] != -1)
+                s.push({rightArr[nodeIndex], code + "1"});
+            if (leftArr[nodeIndex] != -1)
+                s.push({leftArr[nodeIndex], code + "0"});
+        }
+    }
 }
 
 // Step 5: Print table and encoded message

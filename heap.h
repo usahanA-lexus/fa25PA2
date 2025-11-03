@@ -30,20 +30,24 @@ struct MinHeap
     int pop(int weightArr[]) 
     {
         // TODO: remove and return smallest index
-        // Replace root with last element, then call downheap()
-        data[0] = data[size - 1];       // Replace root with last element to maintain struct of the heap (the only element you can remove from the tree that keeps it "complete" is the very last leaf)
+
+        if(size == 0) return -1; // heap is empty
+
+        int smallestIndex = data[0]; // Store the smallest index to return later
+
+        data[0] = data[size - 1];       // Move last element to root 
         size--;
         downheap(0, weightArr);         // Fix the order
-        return data[size];              // Return the smallest index
+        return smallestIndex;           // Return the smallest index
     }
 
     void upheap(int pos, int weightArr[]) 
     {
         // TODO: swap child upward while smaller than parent
-        if (pos >= size) return;        // If pos is out of bounds, return
-        if (pos == 0) return;           // If at root, no need to upheap
+        if (pos >= size) return;            // If pos is out of bounds, return
+        if (pos == 0) return;               // If at root, no need to upheap
 
-        while( pos >0)
+        while(pos > 0)
         {
             int p = (pos - 1) / 2;          // Calculate parent index
             if (compare(weightArr, pos, p)) // Compare pos less than parent
@@ -60,19 +64,17 @@ struct MinHeap
     {
         // TODO: swap parent downward while larger than any child
         if (pos >= size) return;         // If pos is out of bounds, return
-        if (pos == 0) return;            // If at root, no need to downheap
         while (pos < size)
         {
             int left = 2 * pos + 1;         // Calculate left child index
             int right = 2 * pos + 2;        // Calculate right child index
             int smallest = pos;             // Assume current pos is smallest
 
-            if (left < size && weightArr[left] < weightArr[smallest])
+            if (left < size && weightArr[data[left]] < weightArr[data[smallest]])
                 smallest = left;
-            if (right < size && weightArr[right] < weightArr[smallest])
+            if (right < size && weightArr[data[right]] < weightArr[data[smallest]])
                 smallest = right;
-            if (smallest == pos)
-                return;                     // If current pos is smallest, return
+            if (smallest == pos) break;     // If current pos is smallest, break
             swap(data[pos], data[smallest]);// swap the parent with the smallest child
             pos = smallest;                 // Update pos to the smallest child index
         }
